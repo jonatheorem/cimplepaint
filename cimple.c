@@ -44,7 +44,7 @@ long validate_number(char *nstr, long max, int base) {
   
 void fill_background(uint8_t *ppm, uint32_t color, int w, int h) {
   for (int i = 0; i < 3*w*h; i+=3) {
-    ppm[i]   = (color>>(8*0))&0xFF;
+    ppm[i+0] = (color>>(8*0))&0xFF;
     ppm[i+1] = (color>>(8*1))&0xFF;
     ppm[i+2] = (color>>(8*2))&0xFF;
   }

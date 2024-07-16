@@ -11,6 +11,7 @@
 void setup_header(char *header, long w, long h);
 long validate_number(char *nstr, long max, int base);
 void fill_background(uint8_t *ppm, uint32_t color, int w, int h);
-void line(uint8_t *ppm, uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1);
+void line(uint8_t *ppm, uint32_t color, uint32_t x0, uint32_t y0, uint32_t x1,
+          uint32_t y1, uint32_t w, uint32_t h);
 
 #endif
