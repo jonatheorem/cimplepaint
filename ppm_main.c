@@ -5,9 +5,8 @@
 #include <math.h>
 #include "cimple.h"
 
-
 int main(int argc, char *argv[]) {
-  FILE *img;
+  FILE *img_file;
   char fname[] = "imagen.ppm";
 
   long width, height;
@@ -24,7 +23,7 @@ int main(int argc, char *argv[]) {
     printf("Image size: %ldx%ld.\n", width, height);
   }
 
-  if ((img = fopen(fname, "wb")) == NULL) {
+  if ((img_file = fopen(fname, "wb")) == NULL) {
     fprintf(stderr, "Unable to open %s.", fname);
     exit(1);
   }
@@ -34,47 +33,31 @@ int main(int argc, char *argv[]) {
   
   setup_header(header, width, height);
 
+  ppm img = {.header=header,
+	     .pixels=data_buffer,
+	     .width=width,
+	     .height=height};
+  point or = {.x=1, .y=1};
+  
   fill_background(data_buffer, bg_color, width, height);
   /*   255, 69, 0, // orange */
   /*   0, 0, 128, // navy blue */
-  line(data_buffer, 0x800000, 0, 0, width, height/2, width, height);
+  point p0 = {(uint32_t)width/2, 1}, p1 = {(uint32_t)width/2, height};
+  line(&img, 0x800000, p0, p1);
+  p1.x = width; p1.y = height;
+  line(&img, 0x800000, p0, p1);
+  p0.x = 1; p0.y = 1;
+  line(&img, 0xff00, p0, p1);
+
+  uint32_t red = 0xff;
+  rectangle(&img, &red, or, 5, 5);
 
   //g, r, b
-  fwrite(header, sizeof(char), HEADER_LEN, img);
-  fwrite(data_buffer, sizeof(uint8_t), 3*width*height, img);
+  fwrite(header, sizeof(char), HEADER_LEN, img_file);
+  fwrite(data_buffer, sizeof(uint8_t), 3*width*height, img_file);
 
   free(header);
   free(data_buffer);
-  fclose(img);
+  fclose(img_file);
   return 0;
-}
-
-void line(uint8_t *ppm, uint32_t color,
-	  uint32_t x0, uint32_t y0,
-	  uint32_t x1, uint32_t y1,
-	  uint32_t w, uint32_t h) {
-  int range, canonical = 0;
-  float m;
-  if ( x1 - x0 >= y1 - y0 ) {
-    range = x1 - x0;
-    m = (float)(y1-y0)/(x1-x0);
-    canonical = 1;
-  } else {
-    range = y1-y0;
-    m = (float)(x1-x0)/(y1-y0);
-  }
-  uint32_t lcoord, x, y;
-  for(int i = 0; i < range; i++) {
-    if (canonical) {
-      x = i;
-      y = round(m*x+y0);
-    } else {
-      y = i;
-      x = round(m*y + x0);
-    }
-    lcoord = y*w + x; // coordenada lineal
-    ppm[3*lcoord + 0] = (color>>(8*0))&0xFF;
-    ppm[3*lcoord + 1] = (color>>(8*1))&0xFF;
-    ppm[3*lcoord + 2] = (color>>(8*2))&0xFF;
-  }
 }

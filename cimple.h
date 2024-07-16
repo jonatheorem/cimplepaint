@@ -8,10 +8,23 @@
 #define MAX_HEIGHT 9999
 #define HEADER_LEN 17
 #define INT_BUFFER 64 // buffer size to store strings representing integers
+
+typedef struct _point {
+  float x;
+  float y;
+} point;
+
+typedef struct _ppm {
+  char *header;
+  uint8_t *pixels;
+  uint32_t width;
+  uint32_t height;
+} ppm;
+
 void setup_header(char *header, long w, long h);
 long validate_number(char *nstr, long max, int base);
 void fill_background(uint8_t *ppm, uint32_t color, int w, int h);
-void line(uint8_t *ppm, uint32_t color, uint32_t x0, uint32_t y0, uint32_t x1,
-          uint32_t y1, uint32_t w, uint32_t h);
+void line(ppm *img, uint32_t color, point p0, point p1);
+void rectangle(ppm *img, uint32_t *color, point origen, uint32_t, uint32_t);
 
 #endif
