@@ -36,7 +36,9 @@ typedef enum _num_validation_codes {
 //typedef enum _num_validation_codes num_validation_codes;
 
 void setup_header(char *header, long w, long h);
-num_validation_codes validate_number(char *nstr, uint32_t *num, long max, int base);
+num_validation_codes validate_number(char *nstr, uint32_t *num, long max,
+                                     int base);
+void paint_pixel(ppm *img, uint32_t color, point p);
 void fill_background(ppm *img, uint32_t color);
 void line(ppm *img, uint32_t color, point p0, point p1);
 void rectangle(ppm *img, uint32_t *color, point origen, uint32_t, uint32_t);
