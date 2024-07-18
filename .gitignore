@@ -1,5 +1,5 @@
 a.out
 *~
-*.ppm
 *.h.gch
 *.o
+*.check

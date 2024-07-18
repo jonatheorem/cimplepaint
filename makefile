@@ -5,4 +5,4 @@ cimple.o : cimple.c cimple.h
 	gcc -Wall -Wextra -c cimple.c
 
 clean :
-	rm ppm_main *~ *.o *.h.gch
+	rm ppm_main *~ *.o *.h.gch *.ppm
