@@ -3,3 +3,4 @@ a.out
 *.h.gch
 *.o
 *.check
+*.ppm.*

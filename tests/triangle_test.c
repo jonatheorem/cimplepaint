@@ -1,12 +1,10 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-
-#include "headers/cimple.h"
+#include "../headers/cimple.h"
 
 int main(int argc, char *argv[]) {
-  char fname[] = "imagen.ppm";
+  char fname[] = "triangles.test.ppm";
   uint32_t width, height, bg_color;
   ppm img;
 
@@ -22,14 +20,15 @@ int main(int argc, char *argv[]) {
   }
   
   fill_background(&img, bg_color);
-  /*   255, 69, 0, // orange */
-  /*   0, 0, 128, // navy blue */
+  point p0 = {width/2, 1}, p1 = {width/2, height};
+  
+  p0.x = 200; p0.y = 10;
+  p1.x = 10; p1.y = 220;
+  point p2 = {.x=340, .y=340};
+  triangle(&img, 0x8C9579, p0, p1, p2);  
 
-  point center = {.x = width/2, .y=height/2};
-  circle(&img, 0x8C9579, center, 150);
-  
-  
   write_img_to_file(fname, img);
   free_ppm(&img);
   return 0;
 }
+ 
