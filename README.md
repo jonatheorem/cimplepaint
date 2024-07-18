@@ -1,4 +1,4 @@
-# A simple (cimple) library for drawing in image files in C.
+# A simple (cimple) library for drawing (painting) in ppm image files using C programming language.
 
 The objective is to have a library in C to make simple drawings. 
 Currently the output is a ppm file. In the future we will draw to a Xlib
@@ -8,12 +8,13 @@ I'm doing this to learn how to do simple graphics and for playing with Xlib
 and image file formats.
 
 In the longer run I see this library rendering stl files in a Xlib window.
-All of this with minimal requirement, only C programming language and minimal
-requirements of third prty libraries.
+All of this with minimal requirement, only C programming language and -almost-
+no other third party libraries.
 
-## The greatest achivement up to now is drawing triangles
+## Now it is possible to draw triangles and circles!
 
 ![A triangle](examples/triangle.png)
+![A circle](examples/circle.png)
  
 	
 	
