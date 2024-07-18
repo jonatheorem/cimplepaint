@@ -194,7 +194,7 @@ void triangle(ppm *img, uint32_t color, point p0, point p1, point p2) {
   if (l1 >= l2 && l1 >= l0) max_l = l1;
   if (l2 >= l1 && l2 >= l0) max_l = l2;
   
-  for (int i = 0; i < max_l/2; i++) {
+  for (int i = 0; i < max_l/1.5; i++) {
     line(img, color, p0, p1);
     line(img, color, p1, p2);
     line(img, color, p2, p0);

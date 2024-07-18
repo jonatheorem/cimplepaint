@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
   /*   0, 0, 128, // navy blue */
 
   point center = {.x = width/2, .y=height/2};
-  circle(&img, 0xff00, center, 150);
+  circle(&img, 0x8C9579, center, 150);
   
   
   write_img_to_file(fname, img);

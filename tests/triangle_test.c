@@ -22,10 +22,10 @@ int main(int argc, char *argv[]) {
   fill_background(&img, bg_color);
   point p0 = {width/2, 1}, p1 = {width/2, height};
   
-  p0.x = 200; p0.y = 1;
-  p1.x = 1; p1.y = 350;
-  point p2 = {.x=598, .y=550};
-  triangle(&img, 0x00, p0, p1, p2);  
+  p0.x = 200; p0.y = 10;
+  p1.x = 10; p1.y = 220;
+  point p2 = {.x=340, .y=340};
+  triangle(&img, 0x8C9579, p0, p1, p2);  
 
   write_img_to_file(fname, img);
   free_ppm(&img);
