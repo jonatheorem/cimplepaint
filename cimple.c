@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdint.h>
 
-#include "cimple.h"
+#include "headers/cimple.h"
 
 void setup_header(char *header, long w, long h) {
   sprintf(header, "P6\n%04ld %04ld\n255\n", w, h);
