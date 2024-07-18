@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+
 #include "headers/cimple.h"
 
 int main(int argc, char *argv[]) {
@@ -22,10 +24,12 @@ int main(int argc, char *argv[]) {
   fill_background(&img, bg_color);
   /*   255, 69, 0, // orange */
   /*   0, 0, 128, // navy blue */
-  
 
+  point center = {.x = width/2, .y=height/2};
+  circle(&img, 0xff00, center, 150);
+  
+  
   write_img_to_file(fname, img);
   free_ppm(&img);
   return 0;
 }
-  

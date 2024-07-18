@@ -32,9 +32,9 @@ num_validation_codes validate_number(char *nstr, uint32_t *num, long max, int ba
 void paint_pixel(ppm *img, uint32_t color, point p) {
   uint32_t x = round(p.x);
   uint32_t y = round(p.y);
+  
   uint32_t i = y*img->width + x;
-  //printf(" --> pinté en: x: %d, y: %d, i: %d.\n",x, y, i);
-  if (p.x < img->width && p.y < img->height) {
+  if (x < img->width && y < img->height) {
     img->pixels[3*i+0] = (color>>(8*0))&0xFF;
     img->pixels[3*i+1] = (color>>(8*1))&0xFF;
     img->pixels[3*i+2] = (color>>(8*2))&0xFF;
@@ -106,9 +106,9 @@ int validate_cmds(int ac,
   int r = 0;
   *w = DEFAULT_IMG_SIZE;
   *h = DEFAULT_IMG_SIZE;
-  *color = 0xffff;
+  *color = DEFAULT_BG_COLOR;
   if (ac < 4) {
-    printf("Image default: %dx%d. Background color yellow.",
+    printf("Image default: %dx%d. Background color yellow.\n",
 	   DEFAULT_IMG_SIZE, DEFAULT_IMG_SIZE);
     return 0;
   } else { /* Parse width of image */
@@ -119,7 +119,7 @@ int validate_cmds(int ac,
       r = -1;
     }
     if (validate_number(av[3], color, 0xFFFFFFFF, 16) < 0) {
-      *color = 0xffff;
+      *color = DEFAULT_BG_COLOR;
       r = -2;
     }
     printf("Image size: %dx%d.\n", *w, *h);
@@ -224,3 +224,19 @@ point minus_points(point p) {
   point t = {.x = -p.x, .y = -p.y};
   return t;
 }
+
+void circle(ppm *img,
+	    uint32_t color,
+	    point center,
+	    float radius) {
+  point p;
+  for (float r=radius; r > 0; r-=0.4) {
+  /* draw circle parmetrized by arc lenght */
+    for (int i = 0; i < 2*3.1416*radius; i++){
+      p.x = center.x + r*cos(i/r);
+      p.y = center.y + r*sin(i/r);
+      paint_pixel(img, color, p);
+    }
+  }
+}
+
