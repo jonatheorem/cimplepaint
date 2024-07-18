@@ -13,7 +13,7 @@ requirements of third prty libraries.
 
 ## The greatest achivement up to now is drawing triangles
 
-	![A triangle](examples/triangle.ppm)
+	![A triangle](examples/triangle.png)
 	
 	
 	
