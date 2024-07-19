@@ -35,9 +35,11 @@ void paint_pixel(ppm *img, uint32_t color, point p) {
   
   uint32_t i = y*img->width + x;
   if (x < img->width && y < img->height) {
-    img->pixels[3*i+0] = (color>>(8*0))&0xFF;
-    img->pixels[3*i+1] = (color>>(8*1))&0xFF;
-    img->pixels[3*i+2] = (color>>(8*2))&0xFF;
+    /* img->pixels[3*i+0] = (color>>(8*0))&0xFF; */
+    /* img->pixels[3*i+1] = (color>>(8*1))&0xFF; */
+    /* img->pixels[3*i+2] = (color>>(8*2))&0xFF; */
+    /* Before painting i need to see exiting color and alpha */
+    img->pixels[i] = color;
   }
 }
   
@@ -48,6 +50,9 @@ void fill_background(ppm *img, uint32_t color) {
   for (uint32_t i = 0; i < w*h; i++) {
     p.x = i%img->width;
     p.y = (uint32_t)(i/img->height);
+    /* background does not use paint_pixel? */
+    /* I think it is avoidble if i make sure alpha
+       channel of color is 1. */
     paint_pixel(img, color, p);
   }
 }
@@ -134,7 +139,10 @@ void free_ppm(ppm *img) {
 
 int open_img(ppm *img, uint32_t w, uint32_t h) {
   char *header = (char *)malloc(sizeof(char)*HEADER_LEN);
-  uint8_t *pixels = (uint8_t *)malloc(sizeof(uint8_t)*3*w*h);
+  /* Instead of creating 3*w*h of uint8_t use w*h of
+     uint32_t in order to be able to use alpha channel. */
+  /* uint8_t *pixels = (uint8_t *)malloc(sizeof(uint8_t)*3*w*h); */
+  uint32_t *pixels = (uint32_t *)malloc(sizeof(uint32_t)*w*h);
 
   if ( !header || !pixels ) {
     return -1;
@@ -142,10 +150,10 @@ int open_img(ppm *img, uint32_t w, uint32_t h) {
 
   setup_header(header, w, h);
 
-  (*img).header=header;
-  (*img).pixels=pixels;
-  (*img).width=w;
-  (*img).height=h;
+  (*img).header	= header;
+  (*img).pixels	= pixels;
+  (*img).width	= w;
+  (*img).height	= h;
 
   return 0;
 }
@@ -158,8 +166,22 @@ int write_img_to_file(char *fname, ppm img) {
     fprintf(stderr, "Unable to open %s.", fname);
     return -1;
   }
+
+  uint8_t *pixels_write = (uint8_t *)malloc(sizeof(uint8_t)*3*w*h);
+  uint8_t r, g, b;
+  for (uint32_t i = 0; i < w*h; i++){
+    uint32_t pixel = img.pixels[i];
+    b = pixel>>(8*2)&0xFF;
+    g = pixel>>(8*1)&0xFF;
+    r = pixel>>(8*0)&0xFF;
+    
+    pixels_write[3*i+0] = r;
+    pixels_write[3*i+1] = g;
+    pixels_write[3*i+2] = b;
+  }
+
   fwrite(img.header, sizeof(char), HEADER_LEN, img_file);
-  fwrite(img.pixels, sizeof(uint8_t), 3*w*h, img_file);
+  fwrite(pixels_write, sizeof(uint8_t), 3*w*h, img_file);
   fclose(img_file);
   return 0;;
 }

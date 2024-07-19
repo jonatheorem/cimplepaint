@@ -22,22 +22,24 @@ int main(int argc, char *argv[]) {
   }
   
   fill_background(&img, bg_color);
-  /*   255, 69, 0, // orange */
-  /*   0, 0, 128, // navy blue */
   /* 0x8C9579 nice gray */
-  uint32_t navy_blue = 0x800000;
+  uint32_t navy_blue = NAVY_BLUE;
 
   point center = {.x = (float)width/2, .y=(float)height/2};
-  circle(&img, navy_blue, center,(float)width/3);
+  circle(&img, navy_blue, center, (float)width/3);
   
   point p1 = {.x=5, .y=5};
   point p2 = {.x=width-5, .y=(float)height/3};
   point p3 = {.x=(float)width/2, .y=(float)height/2};
   triangle(&img, 0xff, p1, p2, p3);
 
-  uint32_t orange = 0x44ff;
+  uint32_t orange = ORANGE;
   point p4 = {.x=10, .y=height*.55};
   rectangle(&img, &orange, p4, width/2, height/3);
+
+  point lp0 = {.x=width/2, .y=0};
+  point lp1 = {.x=width, .y=height/4};
+  line(&img, 0x00, lp0, lp1);
   
   write_img_to_file(fname, img);
   free_ppm(&img);

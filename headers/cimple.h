@@ -11,6 +11,9 @@
 #define DEFAULT_IMG_SIZE 356
 #define DEFAULT_BG_COLOR 0xEDE6D5
 
+#define ORANGE		0x44FF
+#define NAVY_BLUE	0x800000
+
 // define boleanos as enum
 typedef enum _bool {
   false = 0,
@@ -23,10 +26,10 @@ typedef struct _point {
 } point;
 
 typedef struct _ppm {
-  char *header;
-  uint8_t *pixels;
-  uint32_t width;
-  uint32_t height;
+  char		*header;
+  uint32_t	*pixels;
+  uint32_t	 width;
+  uint32_t	 height;
 } ppm;
 
 typedef enum _num_validation_codes {
