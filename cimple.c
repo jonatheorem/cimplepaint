@@ -104,11 +104,11 @@ int validate_cmds(int ac,
 		  uint32_t *w,
 		  uint32_t *h) {
   int r = 0;
-  *w = DEFAULT_IMG_SIZE;
-  *h = DEFAULT_IMG_SIZE;
+  *w	 = DEFAULT_IMG_SIZE;
+  *h	 = DEFAULT_IMG_SIZE;
   *color = DEFAULT_BG_COLOR;
   if (ac < 4) {
-    printf("Image default: %dx%d. Background color yellow.\n",
+    printf("Image default: %dx%d. Using default background color.\n",
 	   DEFAULT_IMG_SIZE, DEFAULT_IMG_SIZE);
     return 0;
   } else { /* Parse width of image */
@@ -116,7 +116,7 @@ int validate_cmds(int ac,
 	validate_number(av[2], h, MAX_HEIGHT, 10) < 0) {
       *w = DEFAULT_IMG_SIZE;
       *h = DEFAULT_IMG_SIZE;
-      r = -1;
+      r	 = -1;
     }
     if (validate_number(av[3], color, 0xFFFFFFFF, 16) < 0) {
       *color = DEFAULT_BG_COLOR;
@@ -183,9 +183,9 @@ void triangle(ppm *img, uint32_t color, point p0, point p1, point p2) {
   point d1 = sum_points(m1, minus_points(p1));
   point d2 = sum_points(m2, minus_points(p2));
   /* normalized directions */
-  float l0 = norm_points(d0);
-  float l1 = norm_points(d1);
-  float l2 = norm_points(d2);
+  float l0 = 4*norm_points(d0);
+  float l1 = 4*norm_points(d1);
+  float l2 = 4*norm_points(d2);
   point n0 = scalar_mult_points(d0, 1/l0);
   point n1 = scalar_mult_points(d1, 1/l1);
   point n2 = scalar_mult_points(d2, 1/l2);
@@ -194,10 +194,16 @@ void triangle(ppm *img, uint32_t color, point p0, point p1, point p2) {
   if (l1 >= l2 && l1 >= l0) max_l = l1;
   if (l2 >= l1 && l2 >= l0) max_l = l2;
   
-  for (int i = 0; i < max_l/1.5; i++) {
+  for (int i = 0; i < max_l; i++) {
     line(img, color, p0, p1);
     line(img, color, p1, p2);
     line(img, color, p2, p0);
+
+    if ( fabs(p0.x - p1.x) < 1 ||
+	 fabs(p0.y - p1.y) < 1 ||
+	 fabs(p0.x - p2.x) < 1 ||
+	 fabs(p0.y - p2.y) < 1 )
+      break;
 
     p0 = sum_points(p0, n0);
     p1 = sum_points(p1, n1);
