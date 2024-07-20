@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdint.h>
 
+#include <stdbool.h>
+
 #include "headers/cimple.h"
 
 void setup_header(char *header, long w, long h) {
@@ -34,26 +36,49 @@ void paint_pixel(ppm *img, uint32_t color, point p) {
   uint32_t y = round(p.y);
   
   uint32_t i = y*img->width + x;
+  uint32_t c = 0;
+  uint8_t ab, rb, gb, bb; /* channels background */
+  uint8_t af, rf, gf, bf; /* channels foreground */
+  uint8_t ap, rp, gp, bp; /* channels pixels     */
   if (x < img->width && y < img->height) {
-    /* img->pixels[3*i+0] = (color>>(8*0))&0xFF; */
-    /* img->pixels[3*i+1] = (color>>(8*1))&0xFF; */
-    /* img->pixels[3*i+2] = (color>>(8*2))&0xFF; */
     /* Before painting i need to see exiting color and alpha */
-    img->pixels[i] = color;
+    ab = ((img->pixels[i])>>(8*3))&0xFF;
+    bb = ((img->pixels[i])>>(8*2))&0xFF;
+    gb = ((img->pixels[i])>>(8*1))&0xFF;
+    rb = ((img->pixels[i])>>(8*0))&0xFF;
+
+    af = (color>>(8*3))&0xFF;
+    bf = (color>>(8*2))&0xFF;
+    gf = (color>>(8*1))&0xFF;
+    rf = (color>>(8*0))&0xFF;
+
+    ap = af + ab - (ab*af)/255;
+
+    float factor = (ab - (float)ab*af/255);
+    /* WHAT IF ap = 0 ???? */
+    bp = (bf*af + bb*factor)/ap;
+    gp = (gf*af + gb*factor)/ap;
+    rp = (rf*af + rb*factor)/ap;
+    
+    c = c | ap;
+    c = (c<<8) | bp;
+    c = (c<<8) | gp;
+    c = (c<<8) | rp;
+
+    /* c = af; */
+    /* c = (c<<8) | bf; */
+    /* c = (c<<8) | gf; */
+    /* c = (c<<8) | rf; */
+
+    img->pixels[i] = c;
   }
 }
   
 void fill_background(ppm *img, uint32_t color) {
   uint32_t w = img->width;
   uint32_t h = img->height;
-  point p;
   for (uint32_t i = 0; i < w*h; i++) {
-    p.x = i%img->width;
-    p.y = (uint32_t)(i/img->height);
-    /* background does not use paint_pixel? */
-    /* I think it is avoidble if i make sure alpha
-       channel of color is 1. */
-    paint_pixel(img, color, p);
+    img->pixels[i] = color;
   }
 }
 
@@ -92,14 +117,14 @@ void line(ppm *img, uint32_t color, point p0, point p1) {
 }
 
 void rectangle(ppm *img,
-	       uint32_t *color,
+	       uint32_t color,
 	       point origen,
 	       uint32_t w,
 	       uint32_t h) {
   for (uint32_t i = 0; i < w; i++){
     point p0 = {origen.x+i, origen.y};
     point p1 = {origen.x+i, origen.y+h};
-    line(img, *color, p0, p1);
+    line(img, color, p0, p1);
   }
 }
 
@@ -205,9 +230,9 @@ void triangle(ppm *img, uint32_t color, point p0, point p1, point p2) {
   point d1 = sum_points(m1, minus_points(p1));
   point d2 = sum_points(m2, minus_points(p2));
   /* normalized directions */
-  float l0 = 4*norm_points(d0);
-  float l1 = 4*norm_points(d1);
-  float l2 = 4*norm_points(d2);
+  float l0 = norm_points(d0);
+  float l1 = norm_points(d1);
+  float l2 = norm_points(d2);
   point n0 = scalar_mult_points(d0, 1/l0);
   point n1 = scalar_mult_points(d1, 1/l1);
   point n2 = scalar_mult_points(d2, 1/l2);
@@ -216,7 +241,7 @@ void triangle(ppm *img, uint32_t color, point p0, point p1, point p2) {
   if (l1 >= l2 && l1 >= l0) max_l = l1;
   if (l2 >= l1 && l2 >= l0) max_l = l2;
   
-  for (int i = 0; i < max_l; i++) {
+  for (int i = 0; i < 10; i++) {
     line(img, color, p0, p1);
     line(img, color, p1, p2);
     line(img, color, p2, p0);
@@ -252,13 +277,13 @@ point minus_points(point p) {
   point t = {.x = -p.x, .y = -p.y};
   return t;
 }
-
+ 
 void circle(ppm *img,
 	    uint32_t color,
 	    point center,
 	    float radius) {
   point p;
-  for (float r=radius; r > 0; r-=0.4) {
+  for (float r=radius; r > 0; r-=1) {
   /* draw circle parmetrized by arc lenght */
     for (int i = 0; i < 2*3.1416*radius; i++){
       p.x = center.x + r*cos(i/r);

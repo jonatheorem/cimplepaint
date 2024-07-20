@@ -2,6 +2,7 @@
 #define _CIMPLE_H_
 
 #include <inttypes.h>
+#include <stdbool.h>
 
 /* max width and height of images in pixels */
 #define MAX_WIDTH  9999
@@ -9,16 +10,10 @@
 #define HEADER_LEN 17
 #define INT_BUFFER 64 // buffer size to store strings representing integers
 #define DEFAULT_IMG_SIZE 356
-#define DEFAULT_BG_COLOR 0xEDE6D5
+#define DEFAULT_BG_COLOR 0xFFEDE6D5
 
-#define ORANGE		0x44FF
-#define NAVY_BLUE	0x800000
-
-// define boleanos as enum
-typedef enum _bool {
-  false = 0,
-  true  = 1
-} bool;
+#define ORANGE		0xFF0044FF
+#define NAVY_BLUE	0xFF800000
 
 typedef struct _point {
   float x;
@@ -46,7 +41,7 @@ num_validation_codes validate_number(char *nstr, uint32_t *num, long max,
 void paint_pixel(ppm *img, uint32_t color, point p);
 void fill_background(ppm *img, uint32_t color);
 void line(ppm *img, uint32_t color, point p0, point p1);
-void rectangle(ppm *img, uint32_t *color, point origen, uint32_t w, uint32_t h);
+void rectangle(ppm *img, uint32_t color, point origen, uint32_t w, uint32_t h);
 void triangle(ppm *img, uint32_t color, point p0, point p1, point p2);
 void circle(ppm *img, uint32_t color, point center, float radius);
 
