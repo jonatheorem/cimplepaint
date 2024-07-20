@@ -9,7 +9,8 @@
 #define MAX_HEIGHT 9999
 #define HEADER_LEN 17
 #define INT_BUFFER 64 // buffer size to store strings representing integers
-#define DEFAULT_IMG_SIZE 356
+#define DEFAULT_IMG_SIZE 512
+
 #define DEFAULT_BG_COLOR 0xFFEDE6D5
 
 #define ORANGE		0xFF0044FF
@@ -56,6 +57,9 @@ point sum_points(point a, point b);
 point scalar_mult_points(point v, float a);
 float norm_points(point v);
 point minus_points(point p);
+float min(float x, float y);
+float max(float x, float y);
+float area(point a, point b, point c);
 
 
 #endif

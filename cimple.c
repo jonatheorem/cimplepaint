@@ -208,7 +208,7 @@ int write_img_to_file(char *fname, ppm img) {
   fwrite(img.header, sizeof(char), HEADER_LEN, img_file);
   fwrite(pixels_write, sizeof(uint8_t), 3*w*h, img_file);
   fclose(img_file);
-  return 0;;
+  return 0;
 }
 
 void print_point(point p, bool nl) {
@@ -220,42 +220,46 @@ void print_point(point p, bool nl) {
 void triangle(ppm *img, uint32_t color, point p0, point p1, point p2) {
   /* TODO: make sure no two points are equal. If so draw the
      corresponding line (degenerated triangle). */
-  /* calculo direcciones hacia dentro */
-  /* central points of sides */
-  point m0 = scalar_mult_points(sum_points(p1, p2), 0.5);
-  point m1 = scalar_mult_points(sum_points(p2, p0), 0.5);
-  point m2 = scalar_mult_points(sum_points(p0, p1), 0.5);
-  /* directions towards center */
-  point d0 = sum_points(m0, minus_points(p0));
-  point d1 = sum_points(m1, minus_points(p1));
-  point d2 = sum_points(m2, minus_points(p2));
-  /* normalized directions */
-  float l0 = norm_points(d0);
-  float l1 = norm_points(d1);
-  float l2 = norm_points(d2);
-  point n0 = scalar_mult_points(d0, 1/l0);
-  point n1 = scalar_mult_points(d1, 1/l1);
-  point n2 = scalar_mult_points(d2, 1/l2);
-
-  float max_l = l0;
-  if (l1 >= l2 && l1 >= l0) max_l = l1;
-  if (l2 >= l1 && l2 >= l0) max_l = l2;
-  
-  for (int i = 0; i < 10; i++) {
-    line(img, color, p0, p1);
-    line(img, color, p1, p2);
-    line(img, color, p2, p0);
-
-    if ( fabs(p0.x - p1.x) < 1 ||
-	 fabs(p0.y - p1.y) < 1 ||
-	 fabs(p0.x - p2.x) < 1 ||
-	 fabs(p0.y - p2.y) < 1 )
-      break;
-
-    p0 = sum_points(p0, n0);
-    p1 = sum_points(p1, n1);
-    p2 = sum_points(p2, n2);
+  /* Area of triangle, if zero draw line */
+  float A = area(p0, p1, p2);
+  /* look for smallest x and y coordinates */
+  float minx = min(p0.x, min(p1.x, p2.x)) - 1;
+  float miny = min(p0.y, min(p1.y, p2.y)) - 1;
+  float maxx = max(p0.x, max(p1.x, p2.x)) + 1;
+  float maxy = max(p0.y, max(p1.y, p2.y)) + 1;
+  if (fabs(A) < 1) {
+    /* draw vertival or horixontal line */
   }
+
+  point p = {.x=minx, .y=maxy};
+  for (p.y = miny; p.y <= maxy; p.y++) {
+    for (p.x = minx; p.x <= maxx; p.x++){
+      if (p.x >= 0 && p.y >= 0) {
+	float gamma = area(p0, p1, p)/A;
+	float beta  = area(p0, p, p2)/A;
+	float alpha = area(p, p1, p2)/A;
+	if (alpha >= 0 && beta >= 0 && gamma >= 0) {
+	  if (alpha < 1 && beta < 1 && gamma < 1)
+	    paint_pixel(img, color, p);
+	}
+      }
+    }
+  }
+}
+
+float area(point a, point b, point c) {
+  /* return determinant of vectors v1 = b-a and v2 = c-a */
+  return (b.x - a.x)*(c.y - a.y) - (c.x - a.x)*(b.y - a.y);
+}
+
+float min(float x, float y) {
+  float t = -fabs(x-y) + x + y;
+  return t/2;
+}
+
+float max(float x, float y) {
+  float t = fabs(x-y) + x + y;
+  return t/2;
 }
 
 point sum_points(point a, point b) {
@@ -283,12 +287,14 @@ void circle(ppm *img,
 	    point center,
 	    float radius) {
   point p;
-  for (float r=radius; r > 0; r-=1) {
-  /* draw circle parmetrized by arc lenght */
-    for (int i = 0; i < 2*3.1416*radius; i++){
-      p.x = center.x + r*cos(i/r);
-      p.y = center.y + r*sin(i/r);
-      paint_pixel(img, color, p);
+  for (p.y = center.y - radius-1;   p.y < radius+center.y+1; p.y++) {
+    for (p.x = center.x - radius-1; p.x < radius+center.x+1; p.x++) {
+      if (p.x >= 0 && p.y >= 0) {
+	float nx = p.x - center.x;
+	float ny = p.y - center.y;
+	if ( nx*nx + ny*ny < radius*radius )
+	  paint_pixel(img, color, p);
+      }
     }
   }
 }
