@@ -12,7 +12,7 @@ with minimal requirements, only C programming language and -almost- no other thi
 
 ## Sample output of drawing primitives, now with alpha channel supported!!
 
-![Drawing primitives with alpha channel](examples/gral_test_alpha.png=512x512)
+![Drawing primitives with alpha channel](examples/gral_test_alpha.png =512x512)
  
 	
 	
